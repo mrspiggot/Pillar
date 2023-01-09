@@ -1,2 +1,2 @@
 # Pillar
-Some test scripts validating th econcept
+Some test scripts validating the concept
