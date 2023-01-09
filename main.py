@@ -6,11 +6,15 @@ import dash
 import base64
 import datetime
 import io
-
+import openai
+import json
 import dash
 from dash.dependencies import Input, Output, State
 from dash import dcc, html, dash_table
 import dash_bootstrap_components as dbc
+from decouple import config
+OPEN_AI = config('OPEN_AI')
+MODEL = config('MODEL')
 
 
 
@@ -63,6 +67,22 @@ def parse_contents(contents, filename, date):
                 print(page.extract_text())
                 t = page.extract_text()
                 all_text.append(t)
+
+                p_text = "generate account postings from the following invoice. Return the results in JSON format:" + str(all_text) + '\n\n{\n  "Date": "",\n  "Debit/Credit": "",\n  "Accounting Entry": "",\n  "Amount": "",\n  "Currency":""\n}\n\n'
+
+                response = openai.Completion.create(
+                    model=MODEL,
+                    prompt=p_text,
+                    temperature=0.1,
+                    max_tokens=500,
+                    top_p=1,
+                    frequency_penalty=0.1,
+                    presence_penalty=0.1,
+                    stop=[" END"]
+                )
+                print(response.choices[0].text)
+                print(type(response.choices[0].text), type(response.choices[0]), type(response))
+                json_data = json.dumps(response.choices[0].text, indent=1)
         else:
             print("Unsupported file type")
 
@@ -74,10 +94,17 @@ def parse_contents(contents, filename, date):
 
     return html.Div([
         html.H2(filename),
-        html.H4(all_text),
-
-
-
+        html.Hr(),  # horizontal line
+        html.Hr(),  # horizontal line
+        # html.H4(all_text),
+        dcc.Markdown(all_text, style={'whiteSpace': 'pre-wrap',
+                                                      'wordBreak': 'break-all'}),
+        html.Hr(),  # horizontal line
+        html.Hr(),  # horizontal line
+        # html.P(response.choices[0].text),
+        dcc.Markdown(response.choices[0].text, style={'whiteSpace': 'pre-wrap',
+            'wordBreak': 'break-all'}),
+        html.Hr(),  # horizontal line
         html.Hr(),  # horizontal line
 
         # For debugging, display the raw contents provided by the web browser
