@@ -1,16 +1,17 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+from PyPDF2 import PdfReader
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+def run(name):
+    print(f'Hi, {name}')
+    reader = PdfReader("GeoBase_NHNC1_Data_Model_UML_EN.pdf")
+    page = reader.pages[0]
+    print(page.extract_text())
+    for page in reader.pages:
+        print(page.extract_text())
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('Peter')
+    run('Testing pdf-> text')
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
